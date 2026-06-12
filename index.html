@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <meta name="theme-color" content="#1B4332"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="TradeBook"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <title>TradeBook — Your Digital Ledger</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ══════════════ ONBOARDING SCREEN ══════════════ -->
+<div id="onboard-screen" class="screen" style="display:none">
+  <div class="onboard-wrap">
+
+    <!-- Slide 0: Welcome -->
+    <div class="onboard-slide active">
+      <div class="onboard-emoji">📒</div>
+      <h2>Welcome to TradeBook</h2>
+      <p>Your digital exercise book. Built for Nigerian traders — market sellers, provision shops, artisans and more.</p>
+      <div class="onboard-feature-list">
+        <div class="ob-feat">💰 Record sales in seconds</div>
+        <div class="ob-feat">📋 Track who owes you money</div>
+        <div class="ob-feat">📊 See your profit daily</div>
+        <div class="ob-feat">📴 Works 100% offline</div>
+        <div class="ob-feat">🔐 PIN protected &amp; private</div>
+      </div>
+    </div>
+
+    <!-- Slide 1: Features -->
+    <div class="onboard-slide">
+      <div class="onboard-emoji">🤝</div>
+      <h2>Never Lose a Debt Again</h2>
+      <p>Know exactly who owes you, how much, and when. Record part payments and send WhatsApp reminders in one tap.</p>
+      <div class="onboard-img-mock">
+        <div class="mock-card red-mock">
+          <span>Alhaji Musa</span><span style="font-weight:900;color:#C0392B">₦12,000</span>
+        </div>
+        <div class="mock-card red-mock">
+          <span>Bola Student</span><span style="font-weight:900;color:#C0392B">₦3,800</span>
+        </div>
+        <div class="mock-card green-mock">
+          <span>Mama Chidi</span><span style="font-weight:900;color:#2D6A4F">✓ Paid</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Setup -->
+    <div class="onboard-slide">
+      <div class="onboard-emoji">🏪</div>
+      <h2>Set Up Your Shop</h2>
+      <p>Tell us about your business so we can personalise your experience.</p>
+      <div class="ob-form">
+        <div class="ob-field">
+          <label>Your Name</label>
+          <input type="text" id="ob-owner-name" placeholder="e.g. Ada, Musa, Emeka" maxlength="25"/>
+        </div>
+        <div class="ob-field">
+          <label>Shop / Business Name</label>
+          <input type="text" id="ob-shop-name" placeholder="e.g. Ada Provisions" maxlength="40"/>
+        </div>
+        <div class="ob-field">
+          <label>Language</label>
+          <select id="ob-lang-select">
+            <option value="en">English</option>
+            <option value="yo">Yoruba</option>
+            <option value="ig">Igbo</option>
+            <option value="ha">Hausa</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary" id="ob-next-from-setup" style="margin-top:20px;display:none" onclick="Onboard.goToPin()">Next — Set PIN →</button>
+    </div>
+
+    <!-- Slide 3: PIN setup -->
+    <div class="onboard-slide">
+      <div class="onboard-emoji">🔐</div>
+      <h2>Protect Your Data</h2>
+      <p id="ob-pin-label">Create a 4-digit PIN. You'll enter it every time you open the app.</p>
+      <div class="pin-dots" id="ob-pin-dots" style="margin:20px auto">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="pin-pad" style="margin:0 auto">
+        <button class="pin-key" data-target="onboard" data-val="1">1</button>
+        <button class="pin-key" data-target="onboard" data-val="2">2</button>
+        <button class="pin-key" data-target="onboard" data-val="3">3</button>
+        <button class="pin-key" data-target="onboard" data-val="4">4</button>
+        <button class="pin-key" data-target="onboard" data-val="5">5</button>
+        <button class="pin-key" data-target="onboard" data-val="6">6</button>
+        <button class="pin-key" data-target="onboard" data-val="7">7</button>
+        <button class="pin-key" data-target="onboard" data-val="8">8</button>
+        <button class="pin-key" data-target="onboard" data-val="9">9</button>
+        <button class="pin-key pin-skip" id="onboard-skip-pin" style="font-size:12px">Skip</button>
+        <button class="pin-key" data-target="onboard" data-val="0">0</button>
+        <button class="pin-key pin-back" id="onboard-pin-back">⌫</button>
+      </div>
+    </div>
+
+    <!-- Dots & Next button -->
+    <div class="onboard-dots" id="onboard-dots">
+      <span class="active"></span><span></span><span></span><span></span>
+    </div>
+    <button class="btn-primary onboard-next" id="onboard-next">Next →</button>
+    <!-- setup slide uses its own next button above -->
+  </div>
+</div>
+
+<!-- ══════════════ PIN SCREEN ══════════════ -->
+<div id="pin-screen" class="screen" style="display:none">
+  <div class="pin-wrap">
+    <div class="pin-logo">📒</div>
+    <h1 class="pin-title">TradeBook</h1>
+    <p class="pin-sub" id="pin-label">Enter your PIN</p>
+    <div class="pin-dots" id="pin-dots">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="pin-pad">
+      <button class="pin-key" data-val="1">1</button>
+      <button class="pin-key" data-val="2">2</button>
+      <button class="pin-key" data-val="3">3</button>
+      <button class="pin-key" data-val="4">4</button>
+      <button class="pin-key" data-val="5">5</button>
+      <button class="pin-key" data-val="6">6</button>
+      <button class="pin-key" data-val="7">7</button>
+      <button class="pin-key" data-val="8">8</button>
+      <button class="pin-key" data-val="9">9</button>
+      <button class="pin-key pin-skip" id="pin-skip">Skip</button>
+      <button class="pin-key" data-val="0">0</button>
+      <button class="pin-key pin-back" id="pin-back">⌫</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN APP ══════════════ -->
+<div id="app" class="screen" style="display:none">
+
+  <!-- HOME TAB -->
+  <div id="tab-home" class="tab-content active">
+    <div class="home-header">
+      <div class="header-top">
+        <div>
+          <p class="greeting" id="greeting">Good morning 👋</p>
+          <h2 class="shop-title" id="shop-display">My Shop</h2>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn" id="dark-toggle" title="Toggle dark mode">🌙</button>
+          <button class="icon-btn" id="profile-btn" title="Switch profile">👤</button>
+        </div>
+      </div>
+      <div class="summary-card">
+        <p class="summary-label" id="lbl-today-sales">Today's Sales</p>
+        <p class="summary-amount" id="today-sales">₦0</p>
+        <div class="summary-row">
+          <div class="summary-mini"><p class="mini-label">Expenses</p><p class="mini-val expense-color" id="today-expenses">₦0</p></div>
+          <div class="summary-mini"><p class="mini-label">On Credit</p><p class="mini-val credit-color" id="today-credit">₦0</p></div>
+          <div class="summary-mini"><p class="mini-label">Total Owed</p><p class="mini-val debt-color" id="total-debt">₦0</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-body">
+      <div class="debt-alert" id="debt-alert" style="display:none">
+        <span>⚠️</span><p id="debt-alert-text">You are owed ₦0</p>
+      </div>
+      <div class="quick-actions">
+        <button class="qa-btn sale-btn" id="quick-sale"><span class="qa-icon">💰</span><span>I Sold</span></button>
+        <button class="qa-btn credit-btn" id="quick-credit"><span class="qa-icon">📋</span><span>On Credit</span></button>
+        <button class="qa-btn expense-btn" id="quick-expense"><span class="qa-icon">🧾</span><span>I Spent</span></button>
+        <button class="qa-btn voice-btn" id="quick-voice"><span class="qa-icon">🎤</span><span>Voice</span></button>
+      </div>
+      <div class="section-header">
+        <p class="section-title">Recent Transactions</p>
+        <button class="text-btn" id="see-all-btn">See all</button>
+      </div>
+      <div id="txn-list" class="txn-list"></div>
+    </div>
+  </div>
+
+  <!-- DEBT BOOK TAB -->
+  <div id="tab-debts" class="tab-content">
+    <div class="page-header">
+      <h2 id="debt-book-title">Debt Book 📋</h2>
+      <p id="debt-book-sub">Track who owes you money</p>
+    </div>
+    <div class="tab-body">
+      <div class="debt-summary-bar">
+        <div class="dsb-item"><p class="dsb-val" id="total-debtors">0</p><p class="dsb-label" id="debtors-label">Debtors</p></div>
+        <div class="dsb-divider"></div>
+        <div class="dsb-item"><p class="dsb-val red" id="total-owed">₦0</p><p class="dsb-label">Total Owed</p></div>
+        <div class="dsb-divider"></div>
+        <div class="dsb-item"><p class="dsb-val green" id="total-recovered">₦0</p><p class="dsb-label">Recovered</p></div>
+      </div>
+      <div id="debtor-list" class="debtor-list"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="tab-history" class="tab-content">
+    <div class="page-header">
+      <h2 id="history-title">All Transactions 📜</h2>
+    </div>
+    <div class="tab-body">
+      <div class="filter-pills">
+        <button class="pill active" data-filter="all">All</button>
+        <button class="pill" data-filter="sale">Sales</button>
+        <button class="pill" data-filter="credit">Credit</button>
+        <button class="pill" data-filter="expense">Expenses</button>
+      </div>
+      <div class="search-wrap">
+        <input type="text" id="history-search" placeholder="🔍  Search by name or note..." class="search-input"/>
+      </div>
+      <div id="history-list" class="txn-list"></div>
+    </div>
+  </div>
+
+  <!-- REPORTS TAB -->
+  <div id="tab-reports" class="tab-content">
+    <div class="page-header">
+      <h2 id="reports-title">Reports 📊</h2>
+    </div>
+    <div class="tab-body">
+      <div class="period-toggle">
+        <button class="period-btn active" data-period="week">This Week</button>
+        <button class="period-btn" data-period="month">This Month</button>
+        <button class="period-btn" data-period="all">All Time</button>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card green-card"><p class="kpi-label">Total Sales</p><p class="kpi-val" id="rpt-sales">₦0</p></div>
+        <div class="kpi-card profit-card"><p class="kpi-label">Net Profit</p><p class="kpi-val" id="rpt-profit">₦0</p></div>
+        <div class="kpi-card yellow-card"><p class="kpi-label">Expenses</p><p class="kpi-val" id="rpt-expenses">₦0</p></div>
+        <div class="kpi-card red-card"><p class="kpi-label">Unpaid Credit</p><p class="kpi-val" id="rpt-credit">₦0</p></div>
+      </div>
+      <div class="chart-card"><p class="chart-title">Daily Sales</p><div class="bar-chart" id="bar-chart"></div></div>
+      <div class="chart-card"><p class="chart-title">Expenses by Category</p><div id="cat-breakdown" class="cat-breakdown"></div></div>
+      <button class="btn-whatsapp" id="share-report">📲 Share Report on WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="tab-settings" class="tab-content">
+    <div class="page-header"><h2 id="settings-title-el">Settings ⚙️</h2></div>
+    <div class="tab-body">
+      <div class="settings-section">
+        <p class="settings-section-title">Shop Profile</p>
+        <div class="settings-card">
+          <div class="settings-row" id="edit-shop-row" style="cursor:pointer">
+            <span>🏪 <span id="set-shop-name-lbl">Shop Name</span></span>
+            <span class="settings-val" id="settings-shop-name">—</span>
+          </div>
+          <div class="settings-row" id="edit-owner-row" style="cursor:pointer">
+            <span>👤 <span id="set-owner-lbl">Owner Name</span></span>
+            <span class="settings-val" id="settings-owner-name">—</span>
+          </div>
+          <div class="settings-row">
+            <span>🌍 <span id="set-lang-lbl">Language</span></span>
+            <select id="settings-lang" class="settings-select">
+              <option value="en">English</option>
+              <option value="yo">Yoruba</option>
+              <option value="ig">Igbo</option>
+              <option value="ha">Hausa</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <p class="settings-section-title">Business Profiles</p>
+        <div class="settings-card">
+          <div id="profile-list" class="profile-list"></div>
+          <div class="add-profile-row">
+            <input type="text" id="new-profile-input" placeholder="New profile name..." class="inline-input" maxlength="30"/>
+            <button class="btn-small" id="add-profile-btn">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <p class="settings-section-title">Appearance</p>
+        <div class="settings-card">
+          <div class="settings-row">
+            <span>🌙 <span id="set-dark-mode-lbl">Dark Mode</span></span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="dark-mode-toggle"/>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <p class="settings-section-title">Security</p>
+        <div class="settings-card">
+          <div class="settings-row" id="set-pin-row" style="cursor:pointer">
+            <span>🔐 <span id="set-pin-lbl">Set / Change PIN</span></span><span class="chevron">›</span>
+          </div>
+          <div class="settings-row" id="remove-pin-row" style="cursor:pointer">
+            <span>🔓 <span id="set-remove-pin-lbl">Remove PIN</span></span><span class="chevron">›</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <p class="settings-section-title">Recurring Transactions</p>
+        <div class="settings-card">
+          <div id="recurring-list" class="recurring-list"></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <p class="settings-section-title">Data Management</p>
+        <div class="settings-card">
+          <div class="settings-row" id="export-json-btn" style="cursor:pointer">
+            <span id="set-export-json-lbl">💾 Export Backup (JSON)</span><span class="chevron">›</span>
+          </div>
+          <div class="settings-row" id="export-csv-btn" style="cursor:pointer">
+            <span id="set-export-csv-lbl">📊 Export to CSV</span><span class="chevron">›</span>
+          </div>
+          <div class="settings-row" id="import-btn-row" style="cursor:pointer">
+            <span id="set-import-lbl">📥 Import Data</span><span class="chevron">›</span>
+          </div>
+          <input type="file" id="import-file" accept=".json" style="display:none"/>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-card danger-card">
+          <div class="settings-row" id="clear-data-btn" style="cursor:pointer">
+            <span id="set-clear-lbl">🗑️ Clear All Data</span><span class="chevron red">›</span>
+          </div>
+        </div>
+      </div>
+      <p class="app-version">TradeBook v2.0 · Built for Nigerian Traders 🇳🇬</p>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-tab="home"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" data-tab="debts"><span class="nav-icon">📋</span><span class="nav-label">Debts</span></button>
+    <button class="nav-btn" data-tab="history"><span class="nav-icon">📜</span><span class="nav-label">History</span></button>
+    <button class="nav-btn" data-tab="reports"><span class="nav-icon">📊</span><span class="nav-label">Reports</span></button>
+    <button class="nav-btn" data-tab="settings"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button>
+  </nav>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- ADD TRANSACTION -->
+<div class="modal-overlay" id="txn-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3 id="txn-modal-title">Record Transaction</h3>
+      <button class="close-btn" data-close="txn-modal">✕</button>
+    </div>
+    <div class="type-selector" id="type-selector">
+      <button class="type-btn active" data-type="sale">💰 I Sold</button>
+      <button class="type-btn" data-type="credit">📋 On Credit</button>
+      <button class="type-btn" data-type="expense">🧾 I Spent</button>
+    </div>
+    <div class="form-group">
+      <label id="lbl-customer">Customer / Person</label>
+      <input type="text" id="txn-customer" placeholder="e.g. Mama Chidi" autocomplete="off" list="customer-suggestions"/>
+      <datalist id="customer-suggestions"></datalist>
+    </div>
+    <div class="form-group">
+      <label id="lbl-amount">Amount (₦)</label>
+      <input type="number" id="txn-amount" placeholder="e.g. 5000" min="1" inputmode="numeric"/>
+    </div>
+    <div class="form-group">
+      <label id="lbl-category">Category</label>
+      <select id="txn-category">
+        <option value="general">General</option>
+        <option value="food">Food &amp; Groceries</option>
+        <option value="transport">Transport</option>
+        <option value="shopping">Shopping</option>
+        <option value="bills">Bills &amp; Utilities</option>
+        <option value="salary">Salary / Wages</option>
+        <option value="business">Business Supplies</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label id="lbl-note">Note (optional)</label>
+      <input type="text" id="txn-note" placeholder="e.g. Rice, tomato paste..."/>
+    </div>
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input type="checkbox" id="txn-recurring"/>
+        <span>Make this a recurring transaction</span>
+      </label>
+      <div id="recurring-options" style="display:none;margin-top:10px">
+        <select id="recur-freq">
+          <option value="daily">Every Day</option>
+          <option value="weekly">Every Week</option>
+          <option value="monthly">Every Month</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-primary" id="save-txn-btn">✅ Save Transaction</button>
+  </div>
+</div>
+
+<!-- PART PAYMENT -->
+<div class="modal-overlay" id="part-pay-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3>💳 Record Part Payment</h3>
+      <button class="close-btn" data-close="part-pay-modal">✕</button>
+    </div>
+    <input type="hidden" id="part-pay-txn-id"/>
+    <div style="background:var(--red-light);border-radius:12px;padding:12px 16px;margin-bottom:16px;border:1px solid #F5C6CB">
+      <p style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:3px">REMAINING BALANCE</p>
+      <p style="font-size:22px;font-weight:900;color:var(--red)" id="part-pay-balance">₦0</p>
+    </div>
+    <div class="form-group">
+      <label>Amount Being Paid Now (₦)</label>
+      <input type="number" id="part-pay-amount" placeholder="e.g. 2000" min="1" inputmode="numeric"/>
+    </div>
+    <div class="form-group">
+      <label>Note (optional)</label>
+      <input type="text" id="part-pay-note" placeholder="e.g. First installment"/>
+    </div>
+    <button class="btn-primary" id="part-pay-save-btn">✅ Record Payment</button>
+  </div>
+</div>
+
+<!-- VOICE -->
+<div class="modal-overlay" id="voice-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3>🎤 Voice Entry</h3>
+      <button class="close-btn" data-close="voice-modal">✕</button>
+    </div>
+    <p class="voice-hint"><span id="voice-hint-text">Say something like:</span><br>
+      <em id="voice-example-text">"Sold rice for five thousand naira to Mama Chidi"</em></p>
+    <div class="voice-visualizer">
+      <div class="voice-ring"></div>
+      <div class="voice-mic" id="voice-mic-btn">🎤</div>
+    </div>
+    <p class="voice-status" id="voice-status">Tap the mic to start</p>
+    <div class="voice-result" id="voice-result" style="display:none">
+      <p class="voice-heard-label">Heard:</p>
+      <p class="voice-heard-text" id="voice-heard"></p>
+      <p class="voice-parsed" id="voice-parsed"></p>
+    </div>
+    <button class="btn-primary" id="voice-confirm-btn" style="display:none">✅ Confirm &amp; Save</button>
+  </div>
+</div>
+
+<!-- PROFILE SWITCH -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3>👤 Switch Profile</h3>
+      <button class="close-btn" data-close="profile-modal">✕</button>
+    </div>
+    <div id="modal-profile-list" class="modal-profile-list"></div>
+  </div>
+</div>
+
+<!-- EDIT SHOP -->
+<div class="modal-overlay" id="edit-shop-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3>Edit Shop Details</h3>
+      <button class="close-btn" data-close="edit-shop-modal">✕</button>
+    </div>
+    <div class="form-group"><label>Shop Name</label><input type="text" id="edit-shop-name" maxlength="40"/></div>
+    <div class="form-group"><label>Owner Name</label><input type="text" id="edit-owner-name" maxlength="20"/></div>
+    <button class="btn-primary" id="save-shop-btn">Save Changes</button>
+  </div>
+</div>
+
+<!-- SET PIN -->
+<div class="modal-overlay" id="set-pin-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3 id="set-pin-title">Set New PIN</h3>
+      <button class="close-btn" data-close="set-pin-modal">✕</button>
+    </div>
+    <p class="voice-hint" id="set-pin-hint">Enter a 4-digit PIN</p>
+    <div class="pin-dots" id="set-pin-dots" style="margin:16px auto 24px">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="pin-pad" style="margin:0 auto">
+      <button class="pin-key" data-target="set" data-val="1">1</button>
+      <button class="pin-key" data-target="set" data-val="2">2</button>
+      <button class="pin-key" data-target="set" data-val="3">3</button>
+      <button class="pin-key" data-target="set" data-val="4">4</button>
+      <button class="pin-key" data-target="set" data-val="5">5</button>
+      <button class="pin-key" data-target="set" data-val="6">6</button>
+      <button class="pin-key" data-target="set" data-val="7">7</button>
+      <button class="pin-key" data-target="set" data-val="8">8</button>
+      <button class="pin-key" data-target="set" data-val="9">9</button>
+      <button class="pin-key" style="visibility:hidden">-</button>
+      <button class="pin-key" data-target="set" data-val="0">0</button>
+      <button class="pin-key pin-back" id="set-pin-back">⌫</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="storage.js"></script>
+<script src="translations.js"></script>
+<script src="pin.js"></script>
+<script src="transactions.js"></script>
+<script src="debts.js"></script>
+<script src="reports.js"></script>
+<script src="voice.js"></script>
+<script src="settings.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
